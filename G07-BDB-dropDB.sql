@@ -16,6 +16,12 @@ drop table Nominee;
 
 drop table Nominated;
 
+drop table Character_In;
+
+drop table Genre_Of;
+
+drop table Sub_Genre_Of;
+
 
 -- ENTITIES with foreign keys
 

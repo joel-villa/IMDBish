@@ -79,7 +79,7 @@ create table Award(
 
 create table Review(
     id int not null Primary key,
-    movieID int not null,
+    movieId int not null,
     rTitle varchar(255) not null,
     postDate date not null,
     rating int not null,
@@ -147,7 +147,7 @@ create table Credit(
     writerFlag varchar(1),
     starFlag varchar(1),
     crewMemberFlag varchar(1),
-    PRIMARY key (personId, movieId),
+    primary key (personId, movieId),
     foreign key (movieId) references Movie(id),
     foreign key (personId) references Person(id)
     
@@ -159,7 +159,7 @@ create table Nominee(
     awardId  int not null,
     dateNominated date not null,
     won char,
-    PRIMARY key (personId, movieId, awardId),
+    primary key (personId, movieId, awardId),
     foreign key (personId) references Person(id),
     foreign key (awardId)  references Award(id),
     foreign key (movieId)  references Movie(id)
@@ -170,6 +170,33 @@ create table Nominated(
     awardId int not null,
     dateNominated date not null,
     won char,
+    primary key (movieId, awardId),
     foreign key (awardId) references Award(id),
     foreign key (movieId) references Movie(id)
+);
+
+create table Character_In(
+    personId int not null,
+    movieId int not null,
+    characterId int not null,
+    primary key (personId, movieId, characterId),
+    foreign key (personId) references Person(id),
+    foreign key (movieId) references Movie(id),
+    foreign key (characterId) references Character(id)
+);
+
+create table Genre_Of(
+    movieId int not null,
+    genreId int not null,
+    primary key (movieId, genreId),
+    foreign key (movieId) references Movie(id),
+    foreign key (genreId) references Genre(id)
+);
+
+create table Sub_Genre_Of(
+    movieId int not null,
+    sub_genreId int not null,
+    primary key (movieId, sub_genreId),
+    foreign key (movieId) references Movie(id),
+    foreign key (sub_genreId) references Sub_Genre(id)
 );
