@@ -1,6 +1,6 @@
 -- G07-BDB-dropDB
 
--- Drop dependent tables first
+-- Drop miscelaneous tables
 
 drop table Photo;
 
@@ -9,6 +9,10 @@ drop table Video;
 drop table Other_Languages;
 
 drop table Filming_Location;
+
+drop table Subscription_Price;
+
+-- Relationship tables
 
 drop table Credit;
 
@@ -22,6 +26,9 @@ drop table Genre_Of;
 
 drop table Sub_Genre_Of;
 
+drop table Available_On;
+
+drop table Shows;
 
 -- ENTITIES with foreign keys
 

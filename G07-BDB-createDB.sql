@@ -100,44 +100,7 @@ create table Sub_Genre(
     foreign key (genreId) references Genre(id)
 );
 
--- Other tables
-
-create table Photo(
-    id int not null Primary key,
-    personId int,
-    movieId int,
-    filePath varchar(3600),
-    pDescription varchar(3600),
-    posterFlag varchar(1),
-    foreign key (movieId) references Movie(id),
-    foreign key (personId) references Person(id)
-
-);
-
-create table Video(
-    id int not null Primary key,
-    personId int,
-    movieId int,
-    filePath varchar(3600),
-    timeMinutes DECIMAL,
-    foreign key (movieId) references Movie(id),
-    foreign key (personId) references Person(id)
-    
-);
-
-create table Other_Languages(
-    movieId int,
-    mLanguage varchar(3600),
-    primary key(movieId,mLanguage),
-    foreign key (movieId) references Movie(id)
-);
-
-create table Filming_Location(
-    movieId int,
-    mLocation varchar(3600),
-    primary key(movieId,Mlocation),
-    foreign key (movieId) references Movie(id)
-);
+-- Relationship Tables
 
 create table Credit(
     personId int,
@@ -199,4 +162,69 @@ create table Sub_Genre_Of(
     primary key (movieId, sub_genreId),
     foreign key (movieId) references Movie(id),
     foreign key (sub_genreId) references Sub_Genre(id)
+);
+
+
+create table Available_On(
+    movieId int not null,
+    streamerId int not null,
+    primary key (movieId, streamerId),
+    foreign key (movieId) references Movie(id),
+    foreign key (streamerId) references Streamer(id)
+);
+
+create table Shows(
+    movieId int not null,
+    theaterId int not null,
+    showTime date not null,
+    primary key (movieId, theaterId, showTime),
+    foreign key (movieId) references Movie(id),
+    foreign key (theaterId) references Theater(id)
+);
+
+
+-- Other Tables
+
+create table Photo(
+    id int not null Primary key,
+    personId int,
+    movieId int,
+    filePath varchar(3600),
+    pDescription varchar(3600),
+    posterFlag varchar(1),
+    foreign key (movieId) references Movie(id),
+    foreign key (personId) references Person(id)
+
+);
+
+create table Video(
+    id int not null Primary key,
+    personId int,
+    movieId int,
+    filePath varchar(3600),
+    timeMinutes DECIMAL,
+    foreign key (movieId) references Movie(id),
+    foreign key (personId) references Person(id)
+    
+);
+
+create table Other_Languages(
+    movieId int,
+    mLanguage varchar(3600),
+    primary key(movieId,mLanguage),
+    foreign key (movieId) references Movie(id)
+);
+
+create table Filming_Location(
+    movieId int,
+    mLocation varchar(3600),
+    primary key(movieId,Mlocation),
+    foreign key (movieId) references Movie(id)
+);
+
+create table Subscription_Price(
+    id int not null Primary key,
+    streamerId int not null,
+    price double precision,
+    foreign key (streamerId) references Streamer(id)
 );
