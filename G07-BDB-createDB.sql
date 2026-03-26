@@ -187,8 +187,8 @@ create table Shows(
 );
 
 
--- Other Tables
-
+-- Other Tables 
+ 
 create table Photo(
     id int not null Primary key,
     personId int,
