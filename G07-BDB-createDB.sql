@@ -1,17 +1,21 @@
 -- G07-BDB-createDB
-
+-- TODO: Constraints
+-- candidate keys
+-- 
 
 -- Tables w/o foreign keys
 
 create table Movie(
     id int not null Primary key,
-    mTitle varchar(255),
-    releaseDate DATE,
-    Uscert VARCHAR(2),
-    lengthMovie decimal,
+    mTitle  varchar(255) not null,
+    releaseDate     DATE not null,
+    Uscert    VARCHAR(2) not null,
+    mLength      decimal not null,
+    country varchar(255) not null,
+    budget int,
     grossEarning decimal,
-    primaryLanguage varchar(255),
-    mDescription varchar(3600),
+    primaryLanguage varchar(255) not null,
+    mDescription   varchar(3600) not null,
     popularityScore int,
     colorInfo varchar(255),
     soundInfo varchar(3600)    
@@ -19,20 +23,20 @@ create table Movie(
 
 create table Person(
     id int not null Primary key,
-    firstName varchar(255),
-    lastName varchar(255),
-    isCelebrity varchar(1),
-    starmeter int,
+    firstName varchar(255) not null,
+    lastName  varchar(255) not null,
+    isCelebrity varchar(1) not null,
+    starmeter int not null,
     birthDate DATE not null,
     deathDate DATE,
-    gender varchar(2),
+    gender varchar(2) not null,
     biography varchar(255)
 );
 
 create table Character(
     id int not null Primary key,
-    firstName varchar(3666),
-    lastName varchar(3666),
+    firstName varchar(3666) not null,
+    lastName  varchar(3666),
     cDescription varchar(3600)
     
 );
@@ -53,7 +57,7 @@ create table Genre(
 create table Streamer(
     id int not null Primary key,
     sName varchar(255) not null,
-    website varchar(3600)
+    website varchar(3600) not null
 );
 
 create table Theater(
@@ -103,13 +107,13 @@ create table Sub_Genre(
 -- Relationship Tables
 
 create table Credit(
-    personId int,
-    movieId int,
-    actorFlag varchar(1),
-    directorFlag varchar(1),
-    writerFlag varchar(1),
-    starFlag varchar(1),
-    crewMemberFlag varchar(1),
+    personId int not null,
+    movieId int not null,
+    actorFlag      varchar(1) not null,
+    directorFlag   varchar(1) not null,
+    writerFlag     varchar(1) not null,
+    starFlag       varchar(1) not null,
+    crewMemberFlag varchar(1) not null,
     primary key (personId, movieId),
     foreign key (movieId) references Movie(id),
     foreign key (personId) references Person(id)
@@ -188,10 +192,10 @@ create table Shows(
 create table Photo(
     id int not null Primary key,
     personId int,
-    movieId int,
-    filePath varchar(3600),
+    movieId  int,
+    filePath varchar(3600) not null,
     pDescription varchar(3600),
-    posterFlag varchar(1),
+    posterFlag varchar(1) not null,
     foreign key (movieId) references Movie(id),
     foreign key (personId) references Person(id)
 
@@ -200,24 +204,25 @@ create table Photo(
 create table Video(
     id int not null Primary key,
     personId int,
-    movieId int,
-    filePath varchar(3600),
-    timeMinutes DECIMAL,
+    movieId  int,
+    filePath varchar(3600) not null,
+    timeMinutes    DECIMAL not null,
+    vDescription varchar(3600),
     foreign key (movieId) references Movie(id),
     foreign key (personId) references Person(id)
     
 );
 
 create table Other_Languages(
-    movieId int,
-    mLanguage varchar(3600),
+    movieId int not null,
+    mLanguage varchar(3600) not null,
     primary key(movieId,mLanguage),
     foreign key (movieId) references Movie(id)
 );
 
 create table Filming_Location(
-    movieId int,
-    mLocation varchar(3600),
+    movieId int not null,
+    mLocation varchar(3600) not null,
     primary key(movieId,Mlocation),
     foreign key (movieId) references Movie(id)
 );
@@ -226,5 +231,12 @@ create table Subscription_Price(
     id int not null Primary key,
     streamerId int not null,
     price double precision,
+    foreign key (streamerId) references Streamer(id)
+);
+
+create table Region_Availability(
+    id int not null Primary key,
+    streamerId int not null,
+    region varchar(255),
     foreign key (streamerId) references Streamer(id)
 );

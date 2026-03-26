@@ -12,6 +12,8 @@ drop table Filming_Location;
 
 drop table Subscription_Price;
 
+drop table Region_Availability;
+
 -- Relationship tables
 
 drop table Credit;
