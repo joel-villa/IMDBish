@@ -1,12 +1,12 @@
 -- G07-BDB-createDB
 -- TODO: Constraints
 -- candidate keys
--- domain constraints
+
 
 -- Tables w/o foreign keys
 
 create table Movie(
-    id int not null Primary key,
+    id int generated as identity Primary key,
     mTitle  varchar(255) not null,
     releaseDate     DATE not null,
     Uscert    VARCHAR(4) not null,
@@ -19,7 +19,7 @@ create table Movie(
     popularityScore int,
     colorInfo varchar(255),
     soundInfo varchar(3600),
-    constraint ch_mlength check (MLength < 24),
+    constraint ch_mlength check (MLength < 24 and mLength > 0),
     constraint ch_cert check (Uscert in ('G', 'PG', 'PG13', 'R', 'NR')),
     constraint ch_cinf check (colorInfo in ('Color', 'Black', 'White', 'Colorized', 'ACES')) 
 );
@@ -34,7 +34,8 @@ create table Person(
     deathDate DATE,
     gender varchar(2) not null,
     biography varchar(255),
-    constraint ch_isceleb check (isCelebrity in ('T', 'F'))
+    constraint ch_isceleb check (isCelebrity in ('T', 'F')),
+    constraint ch_star check (starmeter > 0)
 );
 
 create table Character(
@@ -52,7 +53,7 @@ create table Event(
 );
 
 create table Genre(
-    id int not null Primary key,
+    id int generated as identity Primary key,
     gName varchar(255) not null,
     gDescription varchar(3600)
 );
@@ -69,9 +70,12 @@ create table Theater(
     street varchar(255) not null,
     city varchar(255) not null,
     tState varchar(255) not null,
-    postal varchar(255) not null,
+    postal int not null,
     wheelChair char not null,
-    hearingImpaired char not null
+    hearingImpaired char not null,
+    constraint ch_post check (postal >= 0 and postal < 100000),
+    constraint ch_wheel check (wheelChair in ('T', 'F')),
+    constraint ch_hear check (hearingImpaired in ('T', 'F'))
 );
 
 -- Tables of ENTITES w/ foreign keys -- participate in a relationship (1,1)
@@ -96,7 +100,10 @@ create table Review(
     authorFName varchar(255) not null,
     authorLName varchar(255) not null,
     publication varchar(255) not null,
-    foreign key (movieId) references Movie(id)
+    foreign key (movieId) references Movie(id),
+    constraint ch_rating check (rating >= 0 and rating <= 10),
+    constraint ch_likes check (likes >= 0),
+    constraint ch_dlikes check (dislikes >= 0)
 );
 
 create table Sub_Genre(
@@ -119,8 +126,12 @@ create table Credit(
     crewMemberFlag varchar(1) not null,
     primary key (personId, movieId),
     foreign key (movieId) references Movie(id),
-    foreign key (personId) references Person(id)
-    
+    foreign key (personId) references Person(id),
+    constraint ch_act check (actorFlag in ('T', 'F')),
+    constraint ch_dic check (directorFlag in ('T', 'F')),
+    constraint ch_wri check (writerFlag in ('T', 'F')),
+    constraint ch_sta check (starFlag in ('T', 'F')),
+    constraint ch_cre check (crewMemberFlag in ('T', 'F'))
 );
 
 create table Nominee(
@@ -132,7 +143,8 @@ create table Nominee(
     primary key (personId, movieId, awardId),
     foreign key (personId) references Person(id),
     foreign key (awardId)  references Award(id),
-    foreign key (movieId)  references Movie(id)
+    foreign key (movieId)  references Movie(id),
+    constraint ch_won check (won in ('T', 'F'))
 );
 
 create table Nominated(
@@ -142,7 +154,8 @@ create table Nominated(
     won char,
     primary key (movieId, awardId),
     foreign key (awardId) references Award(id),
-    foreign key (movieId) references Movie(id)
+    foreign key (movieId) references Movie(id),
+    constraint ch_moviewon check (won in ('T', 'F'))
 );
 
 create table Character_In(
@@ -200,7 +213,8 @@ create table Photo(
     pDescription varchar(3600),
     posterFlag varchar(1) not null,
     foreign key (movieId) references Movie(id),
-    foreign key (personId) references Person(id)
+    foreign key (personId) references Person(id),
+    constraint ch_pflag check (posterFlag in ('T', 'F'))
 
 );
 
@@ -209,10 +223,11 @@ create table Video(
     personId int,
     movieId  int,
     filePath varchar(3600) not null,
-    timeMinutes    DECIMAL not null,
+    timeMinutes    decimal not null,
     vDescription varchar(3600),
     foreign key (movieId) references Movie(id),
-    foreign key (personId) references Person(id)
+    foreign key (personId) references Person(id),
+    constraint ch_min check (timeMinutes > 0 and timeMinutes < 120)
     
 );
 
@@ -234,7 +249,9 @@ create table Subscription_Price(
     id int generated as identity Primary key,
     streamerId int not null,
     price decimal,
-    foreign key (streamerId) references Streamer(id)
+    foreign key (streamerId) references Streamer(id),
+    constraint ch_price check (price >= 0 and price < 1000000)
+
 );
 
 create table Region_Availability(
