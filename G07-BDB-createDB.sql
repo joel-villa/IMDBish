@@ -1,7 +1,7 @@
 -- G07-BDB-createDB
 -- TODO: Constraints
 -- candidate keys
--- 
+-- domain constraints
 
 -- Tables w/o foreign keys
 
@@ -9,7 +9,7 @@ create table Movie(
     id int not null Primary key,
     mTitle  varchar(255) not null,
     releaseDate     DATE not null,
-    Uscert    VARCHAR(2) not null,
+    Uscert    VARCHAR(4) not null,
     mLength      decimal not null,
     country varchar(255) not null,
     budget int,
@@ -18,11 +18,14 @@ create table Movie(
     mDescription   varchar(3600) not null,
     popularityScore int,
     colorInfo varchar(255),
-    soundInfo varchar(3600)    
+    soundInfo varchar(3600),
+    constraint ch_mlength check (MLength < 24),
+    constraint ch_cert check (Uscert in ('G', 'PG', 'PG13', 'R', 'NR')),
+    constraint ch_cinf check (colorInfo in ('Color', 'Black', 'White', 'Colorized', 'ACES')) 
 );
 
 create table Person(
-    id int not null Primary key,
+    id int generated as identity Primary key,
     firstName varchar(255) not null,
     lastName  varchar(255) not null,
     isCelebrity varchar(1) not null,
@@ -30,19 +33,19 @@ create table Person(
     birthDate DATE not null,
     deathDate DATE,
     gender varchar(2) not null,
-    biography varchar(255)
+    biography varchar(255),
+    constraint ch_isceleb check (isCelebrity in ('T', 'F'))
 );
 
 create table Character(
-    id int not null Primary key,
+    id int generated as identity Primary key,
     firstName varchar(3666) not null,
     lastName  varchar(3666),
     cDescription varchar(3600)
-    
 );
 
 create table Event(
-    id int not null Primary key,
+    id int generated as identity Primary key,
     eTitle varchar(255) not null, 
     eDate date not null,
     eLocation varchar(255) not null 
@@ -55,13 +58,13 @@ create table Genre(
 );
 
 create table Streamer(
-    id int not null Primary key,
+    id int generated as identity Primary key,
     sName varchar(255) not null,
     website varchar(3600) not null
 );
 
 create table Theater(
-    id int not null Primary key, 
+    id int generated as identity Primary key, 
     tName varchar(255) not null,
     street varchar(255) not null,
     city varchar(255) not null,
@@ -74,7 +77,7 @@ create table Theater(
 -- Tables of ENTITES w/ foreign keys -- participate in a relationship (1,1)
 
 create table Award(
-    id int not null Primary key,
+    id int generated as identity Primary key,
     eventId int not null,
     aTitle varchar(255) not null,
     category varchar(255) not null,
@@ -82,7 +85,7 @@ create table Award(
 );
 
 create table Review(
-    id int not null Primary key,
+    id int generated as identity Primary key,
     movieId int not null,
     rTitle varchar(255) not null,
     postDate date not null,
@@ -97,7 +100,7 @@ create table Review(
 );
 
 create table Sub_Genre(
-    id int not null Primary key,
+    id int generated as identity Primary key,
     genreId int not null, 
     sPrefix varchar(255) not null,
     sDescription varchar(3600),
@@ -180,7 +183,7 @@ create table Available_On(
 create table Shows(
     movieId int not null,
     theaterId int not null,
-    showTime date not null,
+    showTime timestamp not null,
     primary key (movieId, theaterId, showTime),
     foreign key (movieId) references Movie(id),
     foreign key (theaterId) references Theater(id)
@@ -190,7 +193,7 @@ create table Shows(
 -- Other Tables 
  
 create table Photo(
-    id int not null Primary key,
+    id int generated as identity Primary key,
     personId int,
     movieId  int,
     filePath varchar(3600) not null,
@@ -202,7 +205,7 @@ create table Photo(
 );
 
 create table Video(
-    id int not null Primary key,
+    id int generated as identity Primary key,
     personId int,
     movieId  int,
     filePath varchar(3600) not null,
@@ -228,14 +231,14 @@ create table Filming_Location(
 );
 
 create table Subscription_Price(
-    id int not null Primary key,
+    id int generated as identity Primary key,
     streamerId int not null,
-    price double precision,
+    price decimal,
     foreign key (streamerId) references Streamer(id)
 );
 
 create table Region_Availability(
-    id int not null Primary key,
+    id int generated as identity Primary key,
     streamerId int not null,
     region varchar(255),
     foreign key (streamerId) references Streamer(id)
