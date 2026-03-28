@@ -21,7 +21,8 @@ create table Movie(
     soundInfo varchar(3600),
     constraint ch_mlength check (MLength < 24 and mLength > 0),
     constraint ch_cert check (Uscert in ('G', 'PG', 'PG13', 'R', 'NR')),
-    constraint ch_cinf check (colorInfo in ('Color', 'Black', 'White', 'Colorized', 'ACES')) 
+    constraint ch_cinf check (colorInfo in ('Color', 'Black', 'White', 'Colorized', 'ACES')), 
+    constraint star_list unique (popularityScore)
 );
 
 create table Person(
@@ -34,8 +35,9 @@ create table Person(
     deathDate DATE,
     gender varchar(2) not null,
     biography varchar(255),
-    constraint ch_isceleb check (isCelebrity in ('T', 'F')),
-    constraint ch_star check (starmeter > 0)
+    constraint ch_isceleb2 check (isCelebrity in ('T', 'F')),
+    constraint ch_star2 check (starmeter > 0),
+    constraint star_list2 unique (starmeter)
 );
 
 create table Character(
@@ -53,15 +55,16 @@ create table Event(
 );
 
 create table Genre(
-    id int generated as identity Primary key,
-    gName varchar(255) not null,
-    gDescription varchar(3600)
+    gName varchar(255) not null, 
+    gDescription varchar(3600),
+    primary key (gName)
 );
 
 create table Streamer(
     id int generated as identity Primary key,
     sName varchar(255) not null,
-    website varchar(3600) not null
+    website varchar(3600) not null,
+    CONSTRAINT un_web unique (website)
 );
 
 create table Theater(
@@ -85,7 +88,8 @@ create table Award(
     eventId int not null,
     aTitle varchar(255) not null,
     category varchar(255) not null,
-    foreign key (eventId) references Event(id)
+    foreign key (eventId) references Event(id),
+    CONSTRAINT ch_titleEvent unique (aTitle,eventId)
 );
 
 create table Review(
@@ -103,15 +107,16 @@ create table Review(
     foreign key (movieId) references Movie(id),
     constraint ch_rating check (rating >= 0 and rating <= 10),
     constraint ch_likes check (likes >= 0),
-    constraint ch_dlikes check (dislikes >= 0)
+    constraint ch_dlikes check (dislikes >= 0),
+    CONSTRAINT ch_original unique (movieId, authorFName, authorLName) -- to prevent a review from rereviwing a movie
 );
 
 create table Sub_Genre(
     id int generated as identity Primary key,
-    genreId int not null, 
+    genre varchar(3600) not null, 
     sPrefix varchar(255) not null,
     sDescription varchar(3600),
-    foreign key (genreId) references Genre(id)
+    foreign key (genre) references Genre(gName)
 );
 
 -- Relationship Tables
@@ -124,6 +129,7 @@ create table Credit(
     writerFlag     varchar(1) not null,
     starFlag       varchar(1) not null,
     crewMemberFlag varchar(1) not null,
+    crewMemeberTitle varchar (3600),
     primary key (personId, movieId),
     foreign key (movieId) references Movie(id),
     foreign key (personId) references Person(id),
@@ -132,6 +138,7 @@ create table Credit(
     constraint ch_wri check (writerFlag in ('T', 'F')),
     constraint ch_sta check (starFlag in ('T', 'F')),
     constraint ch_cre check (crewMemberFlag in ('T', 'F'))
+    
 );
 
 create table Nominee(
@@ -170,10 +177,10 @@ create table Character_In(
 
 create table Genre_Of(
     movieId int not null,
-    genreId int not null,
-    primary key (movieId, genreId),
+    gName varchar(3600) not null,
+    primary key (movieId, gName),
     foreign key (movieId) references Movie(id),
-    foreign key (genreId) references Genre(id)
+    foreign key (gName) references Genre(gName)
 );
 
 create table Sub_Genre_Of(
@@ -214,7 +221,8 @@ create table Photo(
     posterFlag varchar(1) not null,
     foreign key (movieId) references Movie(id),
     foreign key (personId) references Person(id),
-    constraint ch_pflag check (posterFlag in ('T', 'F'))
+    constraint ch_pflag check (posterFlag in ('T', 'F')),
+    CONSTRAINT ch_uniPho unique (filePath)
 
 );
 
@@ -227,7 +235,8 @@ create table Video(
     vDescription varchar(3600),
     foreign key (movieId) references Movie(id),
     foreign key (personId) references Person(id),
-    constraint ch_min check (timeMinutes > 0 and timeMinutes < 120)
+    constraint ch_min check (timeMinutes > 0 and timeMinutes < 120),
+    CONSTRAINT ch_uniVid unique (filePath)
     
 );
 
@@ -246,17 +255,17 @@ create table Filming_Location(
 );
 
 create table Subscription_Price(
-    id int generated as identity Primary key,
     streamerId int not null,
     price decimal,
+    primary key ( streamerId, price),
     foreign key (streamerId) references Streamer(id),
     constraint ch_price check (price >= 0 and price < 1000000)
 
 );
 
 create table Region_Availability(
-    id int generated as identity Primary key,
     streamerId int not null,
     region varchar(255),
+    primary key (streamerId, region),
     foreign key (streamerId) references Streamer(id)
 );
